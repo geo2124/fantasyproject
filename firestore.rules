@@ -1,0 +1,100 @@
+rules_version = '2';
+
+service cloud.firestore {
+  match /databases/{database}/documents {
+    // 0. Global Safety Net
+    match /{document=**} {
+      allow read, write: if false;
+    }
+
+    // Primitive Definition
+    function incoming() { return request.resource.data; }
+    function existing() { return resource.data; }
+    function isSignedIn() { return request.auth != null; }
+    function isAdmin() { return isSignedIn() && exists(/databases/$(database)/documents/admins/$(request.auth.uid)); }
+    function isOwner(uid) { return isSignedIn() && request.auth.uid == uid; }
+
+    function isValidId(id) { return id is string && id.size() <= 128 && id.matches('^[a-zA-Z0-9_\\-]+$'); }
+
+    // Users
+    match /users/{userId} {
+      allow get: if isOwner(userId) || isAdmin();
+      allow list: if isAdmin();
+      allow create: if isOwner(userId) && incoming().keys().hasAll(['email', 'role']) && incoming().role == 'user';
+      allow update: if (isOwner(userId) && !incoming().diff(existing()).affectedKeys().hasAny(['role', 'email'])) || isAdmin();
+      allow delete: if isAdmin();
+    }
+
+    // Admins
+    match /admins/{userId} {
+      allow read: if isAdmin();
+      allow write: if isAdmin();
+    }
+
+    // Players
+    function isValidPlayer(data) {
+      return data.name is string && data.name.size() > 0 && data.name.size() <= 500 &&
+             data.team is string && data.team.size() > 0 && data.team.size() <= 500 &&
+             data.position is string && data.position.size() > 0 && data.position.size() <= 50 &&
+             data.price is number && data.totalPoints is number &&
+             data.status is string && data.status.size() > 0 && data.status.size() <= 50 &&
+             data.sport is string && data.sport.size() > 0 && data.sport.size() <= 64;
+    }
+
+    match /players/{playerId} {
+      allow read: if true;
+      allow create: if isAdmin() && isValidPlayer(incoming());
+      allow update: if isAdmin() && isValidPlayer(incoming());
+      allow delete: if isAdmin();
+    }
+
+    // Fixtures
+    function isValidFixture(data) {
+      return data.homeTeam is string && data.homeTeam.size() > 0 && data.homeTeam.size() <= 500 &&
+             data.awayTeam is string && data.awayTeam.size() > 0 && data.awayTeam.size() <= 500 &&
+             data.date is string && data.date.size() > 0 && data.date.size() <= 128 &&
+             data.status is string && data.status.size() > 0 && data.status.size() <= 50 &&
+             data.sport is string && data.sport.size() > 0 && data.sport.size() <= 64;
+    }
+
+    match /fixtures/{fixtureId} {
+      allow read: if true;
+      allow create: if isAdmin() && isValidFixture(incoming());
+      allow update: if isAdmin() && isValidFixture(incoming());
+      allow delete: if isAdmin();
+    }
+
+    // Squads
+    function isValidSquad(data) {
+      return data.userId is string && data.userId.size() > 0 &&
+             data.name is string && data.name.size() > 0 && data.name.size() <= 500 &&
+             data.bank is number && data.totalPoints is number && data.overallRank is number &&
+             data.sport is string && data.sport.size() > 0 && data.sport.size() <= 64 &&
+             data.players is list && data.players.size() <= 15;
+    }
+
+    match /squads/{squadId} {
+      allow get: if isOwner(existing().userId) || isAdmin();
+      allow list: if isOwner(resource.data.userId) || isAdmin();
+      allow create: if isOwner(incoming().userId) && isValidSquad(incoming());
+      allow update: if (isOwner(existing().userId) && isOwner(incoming().userId) && isValidSquad(incoming())) || isAdmin();
+      allow delete: if isAdmin();
+    }
+
+    // Draft Rooms and Mini Leagues (Accessed via serverless functions or directly)
+    match /draftRooms/{roomId} {
+      allow read, write: if true;
+    }
+    match /miniLeagues/{leagueId} {
+      allow read, write: if true;
+    }
+
+    // Settings
+    match /settings/{settingId} {
+      allow read: if true;
+      allow create: if isAdmin();
+      allow update: if isAdmin();
+      allow delete: if isAdmin();
+    }
+  }
+}

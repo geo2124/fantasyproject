@@ -1,0 +1,45 @@
+
+/app/applet/src/pages/admin/AdminDrafts.tsx
+  55:31  warning  Unexpected any. Specify a different type  @typescript-eslint/no-explicit-any
+
+/app/applet/src/pages/admin/AdminFixtures.tsx
+  100:160  warning  Unexpected any. Specify a different type  @typescript-eslint/no-explicit-any
+
+/app/applet/src/pages/admin/AdminMiniLeagues.tsx
+  54:32  warning  Unexpected any. Specify a different type  @typescript-eslint/no-explicit-any
+
+/app/applet/src/pages/admin/AdminPlayers.tsx
+  157:157  warning  Unexpected any. Specify a different type  @typescript-eslint/no-explicit-any
+  245:152  warning  Unexpected any. Specify a different type  @typescript-eslint/no-explicit-any
+  255:139  warning  Unexpected any. Specify a different type  @typescript-eslint/no-explicit-any
+
+/app/applet/src/pages/app/DraftDashboard.tsx
+  100:55  warning  Unexpected any. Specify a different type  @typescript-eslint/no-explicit-any
+  179:32  warning  Unexpected any. Specify a different type  @typescript-eslint/no-explicit-any
+  207:35  warning  Unexpected any. Specify a different type  @typescript-eslint/no-explicit-any
+  212:36  warning  Unexpected any. Specify a different type  @typescript-eslint/no-explicit-any
+  240:30  warning  Unexpected any. Specify a different type  @typescript-eslint/no-explicit-any
+  248:33  warning  Unexpected any. Specify a different type  @typescript-eslint/no-explicit-any
+  274:92  warning  Unexpected any. Specify a different type  @typescript-eslint/no-explicit-any
+  366:42  warning  Unexpected any. Specify a different type  @typescript-eslint/no-explicit-any
+  366:81  warning  Unexpected any. Specify a different type  @typescript-eslint/no-explicit-any
+  377:38  warning  Unexpected any. Specify a different type  @typescript-eslint/no-explicit-any
+  392:53  warning  Unexpected any. Specify a different type  @typescript-eslint/no-explicit-any
+  420:41  warning  Unexpected any. Specify a different type  @typescript-eslint/no-explicit-any
+  436:50  warning  Unexpected any. Specify a different type  @typescript-eslint/no-explicit-any
+  443:48  warning  Unexpected any. Specify a different type  @typescript-eslint/no-explicit-any
+
+/app/applet/src/pages/app/DraftRoom.tsx
+  295:43   warning  Unexpected any. Specify a different type  @typescript-eslint/no-explicit-any
+  337:48   warning  Unexpected any. Specify a different type  @typescript-eslint/no-explicit-any
+  460:132  warning  Unexpected any. Specify a different type  @typescript-eslint/no-explicit-any
+  534:57   warning  Unexpected any. Specify a different type  @typescript-eslint/no-explicit-any
+  539:51   warning  Unexpected any. Specify a different type  @typescript-eslint/no-explicit-any
+
+/app/applet/src/pages/app/Leagues.tsx
+   20:46  warning  Unexpected any. Specify a different type  @typescript-eslint/no-explicit-any
+  147:48  warning  Unexpected any. Specify a different type  @typescript-eslint/no-explicit-any
+  348:28  warning  Unexpected any. Specify a different type  @typescript-eslint/no-explicit-any
+
+✖ 28 problems (0 errors, 28 warnings)
+

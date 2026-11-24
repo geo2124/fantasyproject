@@ -1,0 +1,105 @@
+{
+  "entities": {
+    "user": {
+      "title": "User",
+      "description": "A registered user of the application",
+      "type": "object",
+      "properties": {
+        "displayName": { "type": "string" },
+        "email": { "type": "string" },
+        "role": { "type": "string", "enum": ["user", "admin"] }
+      },
+      "required": ["email", "role"]
+    },
+    "player": {
+      "title": "Player",
+      "description": "A draftable player",
+      "type": "object",
+      "properties": {
+        "name": { "type": "string" },
+        "team": { "type": "string" },
+        "position": { "type": "string" },
+        "price": { "type": "number" },
+        "totalPoints": { "type": "number" },
+        "status": { "type": "string", "enum": ["available", "injured", "suspended"] },
+        "sport": { "type": "string", "enum": ["football", "basketball"] },
+        "image": { "type": "string" }
+      },
+      "required": ["name", "team", "position", "price", "totalPoints", "status", "sport"]
+    },
+    "fixture": {
+      "title": "Fixture",
+      "description": "A match fixture",
+      "type": "object",
+      "properties": {
+        "homeTeam": { "type": "string" },
+        "awayTeam": { "type": "string" },
+        "date": { "type": "string" },
+        "homeScore": { "type": "number" },
+        "awayScore": { "type": "number" },
+        "status": { "type": "string", "enum": ["upcoming", "live", "finished"] },
+        "sport": { "type": "string", "enum": ["football", "basketball"] }
+      },
+      "required": ["homeTeam", "awayTeam", "date", "status", "sport"]
+    },
+    "squad": {
+      "title": "Squad",
+      "description": "User's fantasy squad",
+      "type": "object",
+      "properties": {
+        "userId": { "type": "string" },
+        "name": { "type": "string" },
+        "bank": { "type": "number" },
+        "totalPoints": { "type": "number" },
+        "overallRank": { "type": "number" },
+        "sport": { "type": "string", "enum": ["football", "basketball"] },
+        "players": {
+          "type": "array",
+          "items": {
+            "type": "object",
+            "properties": {
+              "playerId": { "type": "string" },
+              "isCaptain": { "type": "boolean" },
+              "isViceCaptain": { "type": "boolean" },
+              "isStarting": { "type": "boolean" },
+              "positionIndex": { "type": "number" }
+            }
+          }
+        }
+      },
+      "required": ["userId", "name", "bank", "totalPoints", "overallRank", "sport", "players"]
+    },
+    "settings": {
+      "title": "Settings",
+      "description": "Global application setting",
+      "type": "object",
+      "properties": {
+        "key": { "type": "string" },
+        "value": { "type": "string" }
+      },
+      "required": ["value"]
+    }
+  },
+  "firestore": {
+    "users": {
+        "schema": { "$ref": "#/entities/user" },
+        "description": "Collection of users"
+    },
+    "players": {
+        "schema": { "$ref": "#/entities/player" },
+        "description": "Collection of players available for selection"
+    },
+    "fixtures": {
+        "schema": { "$ref": "#/entities/fixture" },
+        "description": "Collection of match fixtures"
+    },
+    "squads": {
+        "schema": { "$ref": "#/entities/squad" },
+        "description": "Collection of fantasy squads created by users"
+    },
+    "settings": {
+        "schema": { "$ref": "#/entities/settings" },
+        "description": "Collection of key-value settings"
+    }
+  }
+}

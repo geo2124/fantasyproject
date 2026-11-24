@@ -1,0 +1,147 @@
+// This is your Prisma schema file,
+// learn more about it in the docs: https://pris.ly/d/prisma-schema
+
+generator client {
+  provider = "prisma-client-js"
+}
+
+datasource db {
+  provider = "sqlite"
+  url = env("DATABASE_URL")
+}
+
+model User {
+  id             String         @id @default(uuid())
+  email          String         @unique
+  username       String
+  role           String         @default("user")
+  createdAt      DateTime       @default(now())
+  draftLeagues   DraftMember[]
+  createdDrafts  DraftRoom[]    @relation("Creator")
+  tradesInitiated DraftTrade[]  @relation("Initiator")
+  tradesReceived  DraftTrade[]  @relation("Target")
+}
+
+model DraftRoom {
+  id               String         @id
+  creatorId        String
+  name             String
+  sport            String
+  draftType        String
+  scoringSystem    String
+  rosterConfig     String
+  isPublic         Boolean        @default(true)
+  password         String?
+  maxTeams         Int
+  budget           Int
+  draftTimePerPick Int
+  idleTime         Int
+  status           String         @default("pending") // pending, drafting, completed
+  currentTurnIndex Int            @default(0)
+  currentSnakeIdx  Int?
+  timerActive      Boolean        @default(false)
+  timeLeft         Int            @default(0)
+  createdAt        DateTime       @default(now())
+  updatedAt        DateTime       @updatedAt
+
+  creator          User           @relation("Creator", fields: [creatorId], references: [id])
+  members          DraftMember[]
+  trades           DraftTrade[]
+  snakeRoute       SnakeRoute[]
+  bids             DraftBid[]
+}
+
+model DraftMember {
+  id            String     @id @default(uuid())
+  draftId       String
+  userId        String
+  budget        Int
+  isConnected   Boolean    @default(false)
+  isBot         Boolean    @default(false)
+  isAutoBid     Boolean    @default(false)
+  tradeBalance  Int        @default(0)
+  
+  draft         DraftRoom  @relation(fields: [draftId], references: [id], onDelete: Cascade)
+  user          User?      @relation(fields: [userId], references: [id], onDelete: Cascade)
+  
+  // Storing simple JSON for roster, shortlist, outUsers, highestBid etc. 
+  // In SQLite JSON is stored as String. 
+  rosterJson    String     @default("[]")
+  shortlistJson String     @default("[]")
+
+  @@unique([draftId, userId])
+}
+
+model SnakeRoute {
+  id        String   @id @default(uuid())
+  draftId   String
+  userId    String
+  orderIdx  Int
+  reverse   Boolean  @default(false)
+
+  draft     DraftRoom @relation(fields: [draftId], references: [id], onDelete: Cascade)
+}
+
+model DraftTrade {
+  id          String   @id @default(uuid())
+  draftId     String
+  initiatorId String
+  targetId    String
+  offerJson   String
+  receiveJson String
+  status      String   @default("pending") // pending, voting, accepted, rejected
+  votesJson   String   @default("{}")
+
+  draft       DraftRoom @relation(fields: [draftId], references: [id], onDelete: Cascade)
+  initiator   User      @relation("Initiator", fields: [initiatorId], references: [id])
+  target      User      @relation("Target", fields: [targetId], references: [id])
+}
+
+model DraftBid {
+  id        String   @id @default(uuid())
+  draftId   String
+  userId    String
+  amount    Int
+  createdAt DateTime @default(now())
+
+  draft     DraftRoom @relation(fields: [draftId], references: [id], onDelete: Cascade)
+}
+
+model Player {
+  id             String   @id @default(uuid())
+  name           String
+  team           String
+  position       String
+  price          Float
+  totalPoints    Int      @default(0)
+  status         String   @default("available")
+  sport          String
+  image          String?
+  basketballPosDetail String? // Will store JSON
+  fixtureHistory String?    // Will store JSON
+}
+
+model Fixture {
+  id             String   @id @default(uuid())
+  homeTeam       String
+  awayTeam       String
+  homeScore      Int?
+  awayScore      Int?
+  datetime       DateTime
+  status         String
+  sport          String
+  league         String
+  matchday       Int
+}
+
+model Squad {
+  id             String   @id @default(uuid())
+  userId         String
+  name           String
+  bank           Float
+  totalPoints    Int
+  overallRank    Int
+  sport          String
+  draftLeagueId  String?
+  players        String   // JSON of Player[]
+}
